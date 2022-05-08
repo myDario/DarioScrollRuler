@@ -26,12 +26,11 @@ Add the view in a layout:
 ```xml
 <com.labstyle.darioscrollruler.DarioScrollRuler
     android:id="@+id/darioScrollRuler"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="60dp"
     app:minValue="100"
     app:maxValue="300"
     app:initialValue="200"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintBottom_toBottomOf="parent"/>

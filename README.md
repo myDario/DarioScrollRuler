@@ -1,7 +1,7 @@
 # DarioScrollRuler
 Android scrolling ruler view
 
-<img src="art/screen0.gif" width="150"/>
+<img src="art/screen0.gif" width="200"/>
 
 ## Install Dependency
 If you haven't already, add the jitpack repository to the root `buil.gradle` file.

@@ -5,6 +5,7 @@ import android.graphics.Rect
 import android.util.TypedValue
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import com.labstyle.darioscrollruler.RulerMarkerDecoration.Companion.markerWidthDps
 
 class RulerMarkerDecoration: RecyclerView.ItemDecoration() {
     companion object {

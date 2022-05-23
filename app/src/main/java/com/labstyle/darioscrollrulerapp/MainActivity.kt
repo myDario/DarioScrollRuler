@@ -17,6 +17,8 @@ class MainActivity : AppCompatActivity() {
                     findViewById<TextView>(R.id.textviewValue).text = "$value"
                 }
             }
+
+            ruller.reload(min = 50f, max = 250f, initValue = 180f)
         }
     }
 }

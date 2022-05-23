@@ -12,8 +12,10 @@ class DarioScrollRuler @JvmOverloads constructor(
     defStyle: Int = 0,
     defStyleRes: Int = 0
 ): RelativeLayout(context, attrs, defStyle, defStyleRes) {
-    private var rulerAdapter: RulerMarkerAdapter
+    private lateinit var rulerAdapter: RulerMarkerAdapter
     private var rulerMarkers: RecyclerView
+    private var snapHelper: LinearSnapHelper
+    private var currentPositionValue: Float = 0f
 
     var scrollListener: ScrollRulerListener? = null
     var minValue = 0f
@@ -28,27 +30,12 @@ class DarioScrollRuler @JvmOverloads constructor(
         attributes.recycle()
 
         inflate(context, R.layout.dario_scroll_ruler, this)
-
         rulerMarkers = findViewById(R.id.rulerMarkers)
-        rulerAdapter = RulerMarkerAdapter(minValue, maxValue)
-        rulerMarkers.adapter = rulerAdapter
         rulerMarkers.addItemDecoration(RulerMarkerDecoration())
-        val snapHelper = LinearSnapHelper()
+        snapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(rulerMarkers)
 
-        val onScrollListener = RulerSnapOnScrollListener(
-            snapHelper,
-            RulerSnapOnScrollListener.Behavior.NOTIFY_ON_SCROLL
-        ) { position ->
-            val positionValue = rulerAdapter.getValueAtPosition(position)
-            scrollListener?.onRulerScrolled(positionValue)
-        }
-        rulerMarkers.addOnScrollListener(onScrollListener)
-
-        rulerMarkers.post {
-            rulerMarkers.scrollBy(5, 0)
-        }
-        scrollToValue(initialValue)
+        reload(minValue, maxValue, initialValue)
     }
 
     fun scrollToValue(value: Float) {
@@ -56,10 +43,33 @@ class DarioScrollRuler @JvmOverloads constructor(
         //Log.d("rafff", "value: $value position for value: $position ")
         val dx = (position) * RulerMarkerDecoration.getItemWidthPx()
         rulerMarkers.post { rulerMarkers
-            rulerMarkers.scrollBy(dx, 0)
-            //rulerMarkers.smoothScrollBy(dx, 0)
+            //rulerMarkers.scrollBy(dx, 0)
+            rulerMarkers.smoothScrollBy(dx, 0)
 
             //rulerMarkers.scrollToPosition(position)
         }
+    }
+
+    fun reload(min: Float, max: Float, initValue: Float) {
+        minValue = min
+        maxValue = max
+        initialValue = initValue
+
+        rulerAdapter = RulerMarkerAdapter(minValue, maxValue)
+        rulerMarkers.adapter = rulerAdapter
+
+        val onScrollListener = RulerSnapOnScrollListener(
+            snapHelper,
+            RulerSnapOnScrollListener.Behavior.NOTIFY_ON_SCROLL
+        ) { position ->
+            currentPositionValue = rulerAdapter.getValueAtPosition(position)
+            scrollListener?.onRulerScrolled(currentPositionValue)
+        }
+        rulerMarkers.addOnScrollListener(onScrollListener)
+
+        rulerMarkers.post {
+            rulerMarkers.scrollBy(5, 0)
+        }
+        scrollToValue(initialValue)
     }
 }

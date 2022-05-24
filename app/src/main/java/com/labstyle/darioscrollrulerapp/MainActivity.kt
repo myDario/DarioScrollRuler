@@ -18,7 +18,9 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            ruller.reload(min = 50f, max = 250f, initValue = 180f)
+            ruller.postDelayed({
+                ruller.reload(min = 50f, max = 250f, initValue = 180f)
+            }, 5000)
         }
     }
 }

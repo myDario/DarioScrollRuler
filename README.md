@@ -17,7 +17,7 @@ allprojects {
 
 Add the dependency:
 ```gradle
-implementation 'com.github.myDario:DarioScrollRuler:1.0.1'
+implementation 'com.github.myDario:DarioScrollRuler:1.0.2'
 ```
 
 ## Usage
@@ -49,5 +49,10 @@ ruller.scrollListener = object: ScrollRulerListener {
 ### Set min, max, initial value
 Set the minimum value, maximum value, and initial value through code:
 ```kotlin
-ruller.reload(min = 50f, max = 250f, initValue = 180f)
+ruller.reload(min = 50f, max = 250f, initValue = 180f, smoothScroll = false)
+```
+
+### Scroll to a value
+```kotlin
+ruller.scrollToValue(value = 123f, smoothScroll = true)
 ```

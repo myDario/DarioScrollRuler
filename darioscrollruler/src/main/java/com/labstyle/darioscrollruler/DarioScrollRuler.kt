@@ -38,19 +38,27 @@ class DarioScrollRuler @JvmOverloads constructor(
         reload(minValue, maxValue, initialValue)
     }
 
-    fun scrollToValue(value: Float) {
+    fun scrollToValue(value: Float, smoothScroll: Boolean = false) {
         val position = rulerAdapter.getPositionForValue(value)
-        //Log.d("rafff", "value: $value position for value: $position ")
         val dx = (position) * RulerMarkerDecoration.getItemWidthPx()
-        rulerMarkers.post { rulerMarkers
-            //rulerMarkers.scrollBy(dx, 0)
-            rulerMarkers.smoothScrollBy(dx, 0)
+        if (smoothScroll) {
+            rulerMarkers.post {
+                rulerMarkers.smoothScrollBy(dx, 0)
+            }
+            return
+        }
 
-            //rulerMarkers.scrollToPosition(position)
+        if (currentPositionValue == value) {
+            return
+        }
+
+        rulerMarkers.post{
+            rulerMarkers.scrollBy(dx, 0)
+            scrollToValue(value)
         }
     }
 
-    fun reload(min: Float, max: Float, initValue: Float) {
+    fun reload(min: Float, max: Float, initValue: Float, smoothScroll: Boolean = false) {
         minValue = min
         maxValue = max
         initialValue = initValue
@@ -70,6 +78,6 @@ class DarioScrollRuler @JvmOverloads constructor(
         rulerMarkers.post {
             rulerMarkers.scrollBy(5, 0)
         }
-        scrollToValue(initialValue)
+        scrollToValue(initialValue, smoothScroll)
     }
 }

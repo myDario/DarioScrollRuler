@@ -19,8 +19,18 @@ class MainActivity : AppCompatActivity() {
             }
 
             ruller.postDelayed({
-                ruller.reload(min = 50f, max = 250f, initValue = 180f)
+                val minHeightCm = 50f
+                val maxHeightCm = 250f
+                val initialValueCm = feetToCm(6.01f)
+
+                ruller.reload(
+                    min = cmToFeet(minHeightCm) * 10,
+                    max = cmToFeet(maxHeightCm) * 10,
+                    initValue = cmToFeet(initialValueCm) * 10)
             }, 5000)
         }
     }
+
+    fun cmToFeet(cm: Float): Float = cm * 0.0328084f
+    fun feetToCm(feet: Float): Float = feet / 0.0328084f
 }

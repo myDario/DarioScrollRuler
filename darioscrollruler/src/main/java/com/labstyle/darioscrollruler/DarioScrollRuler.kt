@@ -48,7 +48,7 @@ class DarioScrollRuler @JvmOverloads constructor(
             return
         }
 
-        if (currentPositionValue == value) {
+        if (currentPositionValue <= value + 0.1 && currentPositionValue >= value - 0.1) {
             return
         }
 

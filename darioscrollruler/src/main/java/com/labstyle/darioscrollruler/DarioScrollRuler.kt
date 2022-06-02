@@ -15,7 +15,8 @@ class DarioScrollRuler @JvmOverloads constructor(
     private lateinit var rulerAdapter: RulerMarkerAdapter
     private var rulerMarkers: RecyclerView
     private var snapHelper: LinearSnapHelper
-    private var currentPositionValue: Float = 0f
+    var currentPositionValue: Float = 0f
+        private set
 
     var scrollListener: ScrollRulerListener? = null
     var minValue = 0f

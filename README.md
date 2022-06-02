@@ -17,7 +17,7 @@ allprojects {
 
 Add the dependency:
 ```gradle
-implementation 'com.github.myDario:DarioScrollRuler:1.0.4'
+implementation 'com.github.myDario:DarioScrollRuler:1.0.5'
 ```
 
 ## Usage

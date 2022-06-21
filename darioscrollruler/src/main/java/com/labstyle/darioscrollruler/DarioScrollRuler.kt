@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import java.text.FieldPosition
+import kotlin.math.abs
 
 class DarioScrollRuler @JvmOverloads constructor(
     context: Context,
@@ -25,6 +26,7 @@ class DarioScrollRuler @JvmOverloads constructor(
     var minValue = 0f
     var maxValue = 100f
     var initialValue = (minValue + maxValue) / 2
+    private var onScrollListener: RulerSnapOnScrollListener
 
     init {
         val attributes = context.obtainStyledAttributes(attrs, R.styleable.DarioScrollRuler)
@@ -39,29 +41,11 @@ class DarioScrollRuler @JvmOverloads constructor(
         snapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(rulerMarkers)
 
-/*        rulerMarkers.addOnScrollListener(object: RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-
-                val lm = rulerMarkers.layoutManager as LinearLayoutManager
-                val first = lm.findFirstCompletelyVisibleItemPosition()
-                val last = lm.findLastCompletelyVisibleItemPosition()
-                val firstValue = rulerAdapter.getValueAtPosition(first)
-                val lastValue = rulerAdapter.getValueAtPosition(last)
-
-                Log.d("rafff", "onScrolled $first $last $firstValue $lastValue")
-
-                //currentPositionValue = rulerAdapter.getValueAtPosition(position)
-                //scrollListener?.onRulerScrolled(currentPositionValue)
-            }
-        })*/
-
-        val onScrollListener = RulerSnapOnScrollListener(
+        onScrollListener = RulerSnapOnScrollListener(
             snapHelper,
             RulerSnapOnScrollListener.Behavior.NOTIFY_ON_SCROLL
-        ) { position ->
-            //Log.d("raff", "snap scroll position $position")
-            broadcastValue(position)
+        ) { snapPosition ->
+            broadcastValue(snapPosition)
         }
         rulerMarkers.addOnScrollListener(onScrollListener)
 
@@ -69,36 +53,32 @@ class DarioScrollRuler @JvmOverloads constructor(
     }
 
     private fun broadcastValue(position: Int) {
-        //Log.d("rafff", "broadcastValue $position")
         currentPositionValue = rulerAdapter.getValueAtPosition(position)
         scrollListener?.onRulerScrolled(currentPositionValue)
     }
 
-    fun scrollToValue(value: Float, smoothScroll: Boolean = false) {
+    fun scrollToValue(value: Float) {
         val position = rulerAdapter.getPositionForValue(value)
 
         rulerMarkers.scrollToPosition(position)
-        rulerMarkers.postDelayed({ broadcastValue(position) }, 1)
 
-
-/*        val dx = (position) * RulerMarkerDecoration.getItemWidthPx()
-        if (smoothScroll) {
-            rulerMarkers.post {
-                rulerMarkers.smoothScrollBy(dx, 0)
+        // this is to fix the scroll to position with snapHelper
+        rulerMarkers.post {
+            val layoutManager = rulerMarkers.layoutManager as LinearLayoutManager
+            val view = layoutManager.findViewByPosition(position)
+            if (view != null) {
+                snapHelper.calculateDistanceToFinalSnap(layoutManager, view)?.let { snapDistance ->
+                    if (snapDistance[0] != 0  || snapDistance[1] != 0) {
+                        rulerMarkers.scrollBy(snapDistance[0], snapDistance[1])
+                    }
+                }
             }
-            return
         }
 
-        if (currentPositionValue == value) {
-            return
-        }
-
-        rulerMarkers.post{
-            rulerMarkers.scrollBy(dx, 0)
-        }*/
+        broadcastValue(position)
     }
 
-    fun reload(min: Float, max: Float, initValue: Float, smoothScroll: Boolean = false) {
+    fun reload(min: Float, max: Float, initValue: Float) {
         minValue = min
         maxValue = max
         initialValue = initValue
@@ -106,11 +86,9 @@ class DarioScrollRuler @JvmOverloads constructor(
         rulerAdapter = RulerMarkerAdapter(minValue, maxValue)
         rulerMarkers.adapter = rulerAdapter
 
-
-
         rulerMarkers.post {
             rulerMarkers.scrollBy(5, 0)
         }
-        scrollToValue(initialValue, smoothScroll)
+        scrollToValue(initialValue)
     }
 }

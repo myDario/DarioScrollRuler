@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
                 min = cmToFeet(minHeightCm) * 10,
                 max = cmToFeet(maxHeightCm) * 10,
                 initValue = cmToFeet(initialValueCm) * 10)
-        }, 5000)
+        }, 2000)
     }
 
     fun cmToFeet(cm: Float): Float = cm * 0.0328084f

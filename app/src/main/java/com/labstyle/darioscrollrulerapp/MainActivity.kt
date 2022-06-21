@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import com.labstyle.darioscrollruler.DarioScrollRuler
@@ -27,6 +28,7 @@ class MainActivity : AppCompatActivity() {
             val maxHeightCm = 250f
             val initialValueCm = feetToCm(6.01f)
 
+            Log.d("rafff", "min ${cmToFeet(minHeightCm) * 10} max ${cmToFeet(maxHeightCm) * 10} initValue ${cmToFeet(initialValueCm) * 10}")
             ruller.reload(
                 min = cmToFeet(minHeightCm) * 10,
                 max = cmToFeet(maxHeightCm) * 10,

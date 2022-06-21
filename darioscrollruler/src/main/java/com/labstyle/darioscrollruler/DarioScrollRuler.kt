@@ -2,9 +2,12 @@ package com.labstyle.darioscrollruler
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.widget.RelativeLayout
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
+import java.text.FieldPosition
 
 class DarioScrollRuler @JvmOverloads constructor(
     context: Context,
@@ -36,12 +39,49 @@ class DarioScrollRuler @JvmOverloads constructor(
         snapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(rulerMarkers)
 
+/*        rulerMarkers.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val lm = rulerMarkers.layoutManager as LinearLayoutManager
+                val first = lm.findFirstCompletelyVisibleItemPosition()
+                val last = lm.findLastCompletelyVisibleItemPosition()
+                val firstValue = rulerAdapter.getValueAtPosition(first)
+                val lastValue = rulerAdapter.getValueAtPosition(last)
+
+                Log.d("rafff", "onScrolled $first $last $firstValue $lastValue")
+
+                //currentPositionValue = rulerAdapter.getValueAtPosition(position)
+                //scrollListener?.onRulerScrolled(currentPositionValue)
+            }
+        })*/
+
+        val onScrollListener = RulerSnapOnScrollListener(
+            snapHelper,
+            RulerSnapOnScrollListener.Behavior.NOTIFY_ON_SCROLL
+        ) { position ->
+            //Log.d("raff", "snap scroll position $position")
+            broadcastValue(position)
+        }
+        rulerMarkers.addOnScrollListener(onScrollListener)
+
         reload(minValue, maxValue, initialValue)
+    }
+
+    private fun broadcastValue(position: Int) {
+        //Log.d("rafff", "broadcastValue $position")
+        currentPositionValue = rulerAdapter.getValueAtPosition(position)
+        scrollListener?.onRulerScrolled(currentPositionValue)
     }
 
     fun scrollToValue(value: Float, smoothScroll: Boolean = false) {
         val position = rulerAdapter.getPositionForValue(value)
-        val dx = (position) * RulerMarkerDecoration.getItemWidthPx()
+
+        rulerMarkers.scrollToPosition(position)
+        rulerMarkers.postDelayed({ broadcastValue(position) }, 1)
+
+
+/*        val dx = (position) * RulerMarkerDecoration.getItemWidthPx()
         if (smoothScroll) {
             rulerMarkers.post {
                 rulerMarkers.smoothScrollBy(dx, 0)
@@ -55,8 +95,7 @@ class DarioScrollRuler @JvmOverloads constructor(
 
         rulerMarkers.post{
             rulerMarkers.scrollBy(dx, 0)
-            //scrollToValue(value)
-        }
+        }*/
     }
 
     fun reload(min: Float, max: Float, initValue: Float, smoothScroll: Boolean = false) {
@@ -67,14 +106,7 @@ class DarioScrollRuler @JvmOverloads constructor(
         rulerAdapter = RulerMarkerAdapter(minValue, maxValue)
         rulerMarkers.adapter = rulerAdapter
 
-        val onScrollListener = RulerSnapOnScrollListener(
-            snapHelper,
-            RulerSnapOnScrollListener.Behavior.NOTIFY_ON_SCROLL
-        ) { position ->
-            currentPositionValue = rulerAdapter.getValueAtPosition(position)
-            scrollListener?.onRulerScrolled(currentPositionValue)
-        }
-        rulerMarkers.addOnScrollListener(onScrollListener)
+
 
         rulerMarkers.post {
             rulerMarkers.scrollBy(5, 0)

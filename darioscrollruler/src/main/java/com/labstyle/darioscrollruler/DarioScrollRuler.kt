@@ -73,9 +73,9 @@ class DarioScrollRuler @JvmOverloads constructor(
                     }
                 }
             }
-        }
 
-        broadcastValue(position)
+            broadcastValue(position)
+        }
     }
 
     fun reload(min: Float, max: Float, initValue: Float) {
